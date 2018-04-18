@@ -49,7 +49,7 @@ resource "aws_security_group" "bastion_host_security_group" {
   vpc_id      = "${var.vpc_id}"
 
   ingress {
-    from_port   = 22
+    from_port   = "${var.lb_ssh_port}"
     protocol    = "TCP"
     to_port     = 22
     cidr_blocks = "${var.cidrs}"
@@ -62,21 +62,11 @@ resource "aws_security_group" "bastion_host_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = "${merge(var.tags)}"
-}
-
-resource "aws_security_group" "private_instances_security_group" {
-  description = "Enable SSH access to the Private instances from the bastion via port 22"
-  vpc_id      = "${var.vpc_id}"
-
-  ingress {
-    from_port = 22
-    protocol  = "TCP"
-    to_port   = 22
-
-    security_groups = [
-      "${aws_security_group.bastion_host_security_group.id}",
-    ]
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "TCP"
+    cidr_blocks = "${var.private_cidrs}"
   }
 
   tags = "${merge(var.tags)}"

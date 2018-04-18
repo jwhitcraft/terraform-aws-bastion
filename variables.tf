@@ -95,3 +95,17 @@ variable "log_expiry_days" {
   description = "Number of days before logs expiration"
   default     = 90
 }
+
+variable "private_cidrs" {
+  description = "Private CIDRs to allow ssh_access to"
+  type        = "list"
+
+  default = [
+    "0.0.0.0/0",
+  ]
+}
+
+variable "lb_ssh_port" {
+  description = "What port on the bastion LB should forward to port 22, change this to a non-standard-port for more security"
+  default     = 22
+}
