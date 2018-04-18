@@ -66,7 +66,7 @@ resource "aws_security_group" "bastion_host_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = "${var.private_cidrs}"
+    cidr_blocks = ["${var.private_cidrs}"]
   }
 
   tags = "${merge(var.tags)}"
