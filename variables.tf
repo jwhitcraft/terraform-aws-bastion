@@ -109,3 +109,8 @@ variable "lb_ssh_port" {
   description = "What port on the bastion LB should forward to port 22, change this to a non-standard-port for more security"
   default     = 22
 }
+
+variable "name" {
+  description = "Name for the auto scaling group that will propagate to the instances"
+  default     = "bastion"
+}

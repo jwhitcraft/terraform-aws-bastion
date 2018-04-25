@@ -223,4 +223,8 @@ resource "aws_autoscaling_group" "bastion_auto_scaling_group" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = ["${concat(
+      list(map("key", "Name", "value", var.name, "propagate_at_launch", true))
+   )}"]
 }
