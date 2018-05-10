@@ -47,36 +47,47 @@ resource "aws_s3_bucket" "bucket" {
 resource "aws_security_group" "bastion_host_security_group" {
   description = "Enable SSH access to the bastion host from external via port 22"
   vpc_id      = "${var.vpc_id}"
+  tags        = "${merge(var.tags)}"
+}
 
-  ingress {
-    from_port   = "${var.lb_ssh_port}"
-    protocol    = "TCP"
-    to_port     = 22
-    cidr_blocks = "${var.cidrs}"
-  }
-  
-  egress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "bastion_host_security_group_ingress_22" {
+  type        = "ingress"
+  from_port   = "${var.lb_ssh_port}"
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = "${var.cidrs}"
 
-  egress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  security_group_id = "${aws_security_group.bastion_host_security_group.id}"
+}
 
-  egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "TCP"
-    cidr_blocks = ["${var.private_cidrs}"]
-  }
+resource "aws_security_group_rule" "bastion_host_security_group_egress_80" {
+  type        = "egress"
+  from_port   = 80
+  to_port     = 80
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
 
-  tags = "${merge(var.tags)}"
+  security_group_id = "${aws_security_group.bastion_host_security_group.id}"
+}
+
+resource "aws_security_group_rule" "bastion_host_security_group_egress_443" {
+  type        = "egress"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = "${aws_security_group.bastion_host_security_group.id}"
+}
+
+resource "aws_security_group_rule" "bastion_host_security_group_egress_22" {
+  type        = "egress"
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["${var.private_cidrs}"]
+
+  security_group_id = "${aws_security_group.bastion_host_security_group.id}"
 }
 
 resource "aws_iam_role" "bastion_host_role" {
